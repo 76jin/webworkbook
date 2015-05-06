@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>webworkbook</display-name>
+
+    <!-- 서블릿 정의 -->
+    <servlet>
+        <servlet-name>Hello</servlet-name>
+        <servlet-class>lesson03.servlets.HelloWorld</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Hello2</servlet-name>
+        <servlet-class>lesson03.servlets.HelloWorld2</servlet-class>
+    </servlet>
+
+    <!-- 서블릿과 URL을 연결 -->    
+    <servlet-mapping>
+        <servlet-name>Hello</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Hello2</servlet-name>
+        <url-pattern>/hi</url-pattern>
+    </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

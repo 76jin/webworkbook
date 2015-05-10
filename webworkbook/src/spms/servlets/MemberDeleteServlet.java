@@ -5,18 +5,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
+@SuppressWarnings("serial")
 @WebServlet("/member/delete")
 public class MemberDeleteServlet extends HttpServlet {
 
-    private Logger logger = Logger.getLogger(getClass());
+//    private Logger logger = Logger.getLogger(getClass());
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -26,16 +26,17 @@ public class MemberDeleteServlet extends HttpServlet {
         String query = "DELETE FROM MEMBERS WHERE MNO=?";
         int result = 0;
         try {
-            Class.forName(this.getServletContext().getInitParameter("driver"));
+            ServletContext sc = this.getServletContext();
+            Class.forName(sc.getInitParameter("driver"));
             conn = DriverManager.getConnection(
-                    this.getServletContext().getInitParameter("url"),
-                    this.getServletContext().getInitParameter("username"),
-                    this.getServletContext().getInitParameter("password"));
+                    sc.getInitParameter("url"),
+                    sc.getInitParameter("username"),
+                    sc.getInitParameter("password"));
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, Integer.parseInt(req.getParameter("no")));
             result = pstmt.executeUpdate();
             
-            logger.info("[delete] no:" + result);
+//            logger.info("[delete] no:" + result);   // 0: delete fail.
             resp.sendRedirect("list");
         } catch (Exception e) {
             throw new ServletException(e);

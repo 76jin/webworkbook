@@ -14,11 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 public class MemberListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-//    private Logger logger = Logger.getLogger(getClass());
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

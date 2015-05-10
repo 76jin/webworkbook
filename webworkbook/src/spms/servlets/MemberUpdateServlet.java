@@ -55,7 +55,10 @@ public class MemberUpdateServlet extends HttpServlet {
                                 " value='" + rs.getString("EMAIL") + "'><br>");
             out.println("        가입일: " + rs.getString("CRE_DATE") + "<br>");
             out.println("        <input type='submit' value='저장'>");
-            out.println("        <input type='reset' value='취소' onclick='location.href=\"list\"'><br>");
+            out.println("        <input type='button' value='삭제'"
+                    + " onclick='location.href=\"delete?no=" + rs.getInt("MNO") + "\"'>");
+            out.println("        <input type='reset' value='취소'"
+                    + " onclick='location.href=\"list\"'><br>");
             out.println("    </form>");
             out.println("</body>");
             out.println("</html>");
@@ -74,7 +77,8 @@ public class MemberUpdateServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
+//      CharacterEncodingFilter 에서 처리
+//      req.setCharacterEncoding("UTF-8");
         
         Connection conn = null;
         PreparedStatement pstmt = null;

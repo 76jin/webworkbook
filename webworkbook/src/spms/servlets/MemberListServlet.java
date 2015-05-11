@@ -7,12 +7,16 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import spms.vo.Member;
 
 public class MemberListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -24,6 +28,10 @@ public class MemberListServlet extends HttpServlet {
         Connection con = null;
         Statement stmt = null;
         ResultSet rs = null;
+        RequestDispatcher rd = null;
+        String query = "select MNO,MNAME,EMAIL,CRE_DATE"
+                + " from MEMBERS"
+                + " order by MNO ASC";
         try {
             // 1. 사용할 JDBC 드라이버를 등록하라.
 //            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -42,33 +50,38 @@ public class MemberListServlet extends HttpServlet {
             stmt = con.createStatement();
             
             // 4. SQL을 던지는 객체를 사용하여 서버에 질의하라.
-            rs = stmt.executeQuery(
-                    "select MNO,MNAME,EMAIL,CRE_DATE"
-                    + " from MEMBERS"
-                    + " order by MNO ASC");
+            rs = stmt.executeQuery(query);
             
             // 5. 서버에서 가져온 데이터를 사용하여 HTML을 만들어서 웹 브라우저로 출력하라.
+            // 5. 데이터베이스에서 회원 정보를 가져와 Member 에 담는다.
+            //    그리고, Member 객체를 ArrayList 에 추가한다.
             resp.setContentType("text/html; charset=UTF-8");
-            PrintWriter out = resp.getWriter();
-            out.println("<html><head><title>회원목록</title></head><body>");
-            out.println("<h1>회원 목록</h1>");
-            out.println("<p><a href='add'>신규 회원</a></p>");
+            ArrayList<Member> members = new ArrayList<Member>();
+            
             while (rs.next()) {
-                out.println(
-                        rs.getInt("MNO") + "," +
-                        "<a href='update?no=" + rs.getInt("MNO") + "'>" +
-                        rs.getString("MNAME") + "</a>," +
-                        rs.getString("EMAIL") + "," +
-                        rs.getDate("CRE_DATE") + 
-                        "<a href='delete?no=" + rs.getInt("MNO") + "'>" +
-                        "[삭제]</a><br>");
+                members.add(new Member()
+                                .setNo(rs.getInt("MNO"))
+                                .setName(rs.getString("MNAME"))
+                                .setEmail(rs.getString("EMAIL"))
+                                .setCreatedDate(rs.getDate("CRE_DATE"))
+                        );
             }
-            out.println("</body></html>");
+            
+            // request 에 회원 목록 데이터를 보관한다.
+            req.setAttribute("members", members);
+            
+            // JSP로 출력을 위임한다.
+            rd = req.getRequestDispatcher("/member/MemberList.jsp");
+            rd.include(req, resp);
+            
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new ServletException(e);
+            req.setAttribute("error", e);
+            rd = req.getRequestDispatcher("/error/Error.jsp");
+            rd.forward(req, resp);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            req.setAttribute("error", e);
+            rd = req.getRequestDispatcher("/error/Error.jsp");
+            rd.forward(req, resp);
             throw new ServletException(e);
         } finally {
             // 6. 자원 해제.

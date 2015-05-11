@@ -12,6 +12,30 @@ public @Data class Member {
     protected Date createdDate;
     protected Date modifiedDate;
     
+    public int getNo() {
+        return no;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
     public Member setNo(int no) {
         this.no = no;
         return this;

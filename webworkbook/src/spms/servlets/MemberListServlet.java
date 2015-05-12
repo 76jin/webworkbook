@@ -1,9 +1,7 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,7 +23,7 @@ public class MemberListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Connection con = null;
+        Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
         RequestDispatcher rd = null;
@@ -37,17 +35,14 @@ public class MemberListServlet extends HttpServlet {
 //            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 //            ServletConfig config = this.getServletConfig();
 //            Class.forName(config.getInitParameter("driver"));
-            ServletContext sc = this.getServletContext();
-            Class.forName(sc.getInitParameter("driver"));
+//            Class.forName(sc.getInitParameter("driver"));
             
             // 2. 드라이버를 사용하여 MySQL 서버와 연결하라.
-            con = DriverManager.getConnection(
-                    sc.getInitParameter("url"),
-                    sc.getInitParameter("username"),
-                    sc.getInitParameter("password"));
+            ServletContext sc = this.getServletContext();
+            conn = (Connection) sc.getAttribute("conn");
             
             // 3. 커넥션 객체로부터 SQL을 던질 객체를 준비하라.
-            stmt = con.createStatement();
+            stmt = conn.createStatement();
             
             // 4. SQL을 던지는 객체를 사용하여 서버에 질의하라.
             rs = stmt.executeQuery(query);
@@ -78,16 +73,11 @@ public class MemberListServlet extends HttpServlet {
             req.setAttribute("error", e);
             rd = req.getRequestDispatcher("/error/Error.jsp");
             rd.forward(req, resp);
-        } catch (ClassNotFoundException e) {
-            req.setAttribute("error", e);
-            rd = req.getRequestDispatcher("/error/Error.jsp");
-            rd.forward(req, resp);
-            throw new ServletException(e);
         } finally {
             // 6. 자원 해제.
             try {rs.close();} catch (Exception e) {}
             try {stmt.close();} catch (Exception e) {}
-            try {con.close();} catch (Exception e) {}
+//          try {conn.close();} catch (Exception e) {}
         }
         
     }

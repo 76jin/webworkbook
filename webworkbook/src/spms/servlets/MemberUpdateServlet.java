@@ -29,11 +29,8 @@ public class MemberUpdateServlet extends HttpServlet {
         
         try {
             ServletContext sc = this.getServletContext(); 
-            Class.forName(sc.getInitParameter("driver"));
-            conn = DriverManager.getConnection(
-                    sc.getInitParameter("url"), 
-                    sc.getInitParameter("username"), 
-                    sc.getInitParameter("password"));
+            conn = (Connection) sc.getAttribute("conn");
+            
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
             rs.next();
@@ -63,14 +60,12 @@ public class MemberUpdateServlet extends HttpServlet {
             out.println("</body>");
             out.println("</html>");
             
-        } catch (ClassNotFoundException e) {
-            throw new ServletException(e);
         } catch (SQLException e) {
             throw new ServletException(e);
         } finally {
             try { rs.close(); } catch (Exception e) {}
             try { stmt.close(); } catch (Exception e) {}
-            try { conn.close(); } catch (Exception e) {}
+//          try { conn.close(); } catch (Exception e) {}
         }
     }
     
@@ -87,11 +82,8 @@ public class MemberUpdateServlet extends HttpServlet {
         
         try {
             ServletContext sc = this.getServletContext();
-            Class.forName(sc.getInitParameter("driver"));
-            conn = DriverManager.getConnection(
-                    sc.getInitParameter("url"),
-                    sc.getInitParameter("username"),
-                    sc.getInitParameter("password"));
+            conn = (Connection) sc.getAttribute("conn");
+            
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, req.getParameter("email"));
             pstmt.setString(2, req.getParameter("name"));
@@ -103,7 +95,7 @@ public class MemberUpdateServlet extends HttpServlet {
             throw new ServletException(e);
         } finally {
             try { pstmt.close(); } catch (Exception e) {}
-            try { conn.close(); } catch (Exception e) {}
+//          try { conn.close(); } catch (Exception e) {}
         }
     }
 }

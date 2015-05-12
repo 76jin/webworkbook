@@ -3,7 +3,6 @@ package spms.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -47,14 +46,9 @@ public class MemberAddServlet extends HttpServlet {
                 + " values(?,?,?,now(),now())";
         
         try {
-//          DriverManager.registerDriver(new com.mysql.jdbc.Driver());
             ServletContext sc = this.getServletContext();
-            Class.forName(sc.getInitParameter("driver"));
+            conn = (Connection) sc.getAttribute("conn");
             
-            conn = DriverManager.getConnection(
-                    sc.getInitParameter("url"),
-                    sc.getInitParameter("username"),
-                    sc.getInitParameter("password"));
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, req.getParameter("email"));
             pstmt.setString(2, req.getParameter("password"));
@@ -64,29 +58,12 @@ public class MemberAddServlet extends HttpServlet {
             // redirect
             resp.sendRedirect("list");
             
-            // redirect 하면, 아래 코드는 웹브라우저에게 보내지지 않는다.
-            /*
-            resp.setContentType("text/html; charset=UTF-8");
-            PrintWriter out = resp.getWriter();
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>회원등록 결과</title>");
-//          out.println("<meta http-equiv='Refresh' Content='1;url=list'>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("    <p>등록 성공입니다!</p>");
-            out.println("</body>");
-            out.println("</html>");
-            
-            resp.setHeader("Refresh", "1;url=list");
-//          resp.addHeader("Refresh", "1;url=list");
-            */
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         } finally {
-            try { conn.close(); } catch (SQLException e) {}
             try { pstmt.close(); } catch (SQLException e) {}
+//          try { conn.close(); } catch (SQLException e) {}
         }
     }
 }

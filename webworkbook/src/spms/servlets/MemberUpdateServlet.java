@@ -1,19 +1,20 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import spms.vo.Member;
 
 @SuppressWarnings("serial")
 @WebServlet("/member/update")
@@ -25,8 +26,10 @@ public class MemberUpdateServlet extends HttpServlet {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
+        int memberNo = Integer.parseInt(req.getParameter("no"));
         String query = "select MNO,EMAIL,MNAME,CRE_DATE from MEMBERS"
-                + " where MNO=" + req.getParameter("no");
+                + " where MNO=" + memberNo;
+        RequestDispatcher rd = null;
         
         try {
             ServletContext sc = this.getServletContext(); 
@@ -34,35 +37,23 @@ public class MemberUpdateServlet extends HttpServlet {
             
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
-            rs.next();
-            
-            resp.setContentType("text/html; charset=UTF-8");
-            PrintWriter out = resp.getWriter();
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>회원정보</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("    <h1>회원정보</h1>");
-            out.println("    <form action='update' method='post'>");
-            out.println("        번호: <input type='text' name='no' value='" + 
-                                req.getParameter("no") + "' readonly><br>");
-            out.println("        이름: <input type='text' name='name' value='" +
-                                rs.getString("MNAME") + "'><br>");
-            out.println("        이메일: <input type='email' name='email'" +
-                                " value='" + rs.getString("EMAIL") + "'><br>");
-            out.println("        가입일: " + rs.getString("CRE_DATE") + "<br>");
-            out.println("        <input type='submit' value='저장'>");
-            out.println("        <input type='button' value='삭제'"
-                    + " onclick='location.href=\"delete?no=" + rs.getInt("MNO") + "\"'>");
-            out.println("        <input type='reset' value='취소'"
-                    + " onclick='location.href=\"list\"'><br>");
-            out.println("    </form>");
-            out.println("</body>");
-            out.println("</html>");
-            
-        } catch (SQLException e) {
-            throw new ServletException(e);
+            if (rs.next()) {
+                Member member = new Member()
+                                    .setNo(memberNo)
+                                    .setEmail(rs.getString("EMAIL"))
+                                    .setName(rs.getString("MNAME"))
+                                    .setCreatedDate(rs.getDate("CRE_DATE"));
+                req.setAttribute("member", member);
+                
+                rd = req.getRequestDispatcher("/member/MemberUpdateForm.jsp");
+                rd.forward(req, resp);
+            } else {
+                throw new ServletException();
+            }
+        } catch (Exception e) {
+            req.setAttribute("error", e);
+            rd = req.getRequestDispatcher("/error/Error.jsp");
+            rd.forward(req, resp);
         } finally {
             try { rs.close(); } catch (Exception e) {}
             try { stmt.close(); } catch (Exception e) {}
@@ -93,7 +84,9 @@ public class MemberUpdateServlet extends HttpServlet {
             
             resp.sendRedirect("list");
         } catch (Exception e) {
-            throw new ServletException(e);
+            req.setAttribute("error", e);
+            RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");
+            rd.forward(req, resp);
         } finally {
             try { pstmt.close(); } catch (Exception e) {}
 //          try { conn.close(); } catch (Exception e) {}

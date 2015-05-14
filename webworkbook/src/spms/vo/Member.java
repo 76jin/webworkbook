@@ -65,4 +65,11 @@ public @Data class Member {
         this.modifiedDate = modifiedDate;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Member [no=" + no + ", name=" + name + ", email=" + email
+                + ", password=" + password + ", createdDate=" + createdDate
+                + ", modifiedDate=" + modifiedDate + "]";
+    }
 }

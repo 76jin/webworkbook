@@ -1,7 +1,6 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -53,8 +52,9 @@ public class MemberAddServlet extends HttpServlet {
             resp.sendRedirect("list");
             
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServletException(e);
+            req.setAttribute("error", e);
+            RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");
+            rd.forward(req, resp);
         } finally {
             try { pstmt.close(); } catch (SQLException e) {}
 //          try { conn.close(); } catch (SQLException e) {}

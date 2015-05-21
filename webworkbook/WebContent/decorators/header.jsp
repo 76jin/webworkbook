@@ -1,4 +1,3 @@
-<%@page import="org.hamcrest.core.IsNull"%>
 <%@page import="spms.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -10,7 +9,9 @@
     
 <!--head start-->
 <div style="background-color:#00008b;color:#ffffff;height:20px;padding:5px;">
-SPMS (Simple Project Management System)
+	<a style="color:white;" href="../member/list">
+		SPMS (Simple Project Management System)
+	</a>
 <span style="float: right;">
 
 <%

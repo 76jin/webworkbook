@@ -9,7 +9,7 @@
     
 <!--head start-->
 <div style="background-color:#00008b;color:#ffffff;height:20px;padding:5px;">
-	<a style="color:white;" href="../member/list">
+	<a style="color:white;" href="<%=request.getContextPath()%>">
 		SPMS (Simple Project Management System)
 	</a>
 <span style="float: right;">

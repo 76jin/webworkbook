@@ -10,17 +10,16 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import spms.dao.MemberDao;
+import spms.util.DBConnectionPool;
 
 @WebListener
 public class ContextLoaderListener implements ServletContextListener {
 	
-	Connection conn;
+	DBConnectionPool dbConnectionPool;
 
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
-		try {
-			conn.close();
-		} catch (SQLException e) {}
+		dbConnectionPool.closeAll();
 	}
 
 	@Override
@@ -28,14 +27,14 @@ public class ContextLoaderListener implements ServletContextListener {
 		ServletContext sc = event.getServletContext();
 		
 		try {
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
+			dbConnectionPool = new DBConnectionPool(
+					sc.getInitParameter("driver"), 
 					sc.getInitParameter("url"), 
 					sc.getInitParameter("username"), 
 					sc.getInitParameter("password"));
 			
 			MemberDao memberDao = new MemberDao();
-			memberDao.setConnection(conn);
+			memberDao.setDbConnectionPool(dbConnectionPool);
 			
 			sc.setAttribute("memberDao", memberDao);
 			

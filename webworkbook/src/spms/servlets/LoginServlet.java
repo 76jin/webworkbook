@@ -1,7 +1,6 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -29,7 +28,7 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    Connection conn = null;
+		
 	    final String URL_MEMBER_LIST = "../member/list";
 	    final String URL_LOGIN_FAIL = "/auth/LoginFail.jsp";
 	    
@@ -38,10 +37,7 @@ public class LoginServlet extends HttpServlet {
 	    
 	    try {
 	        ServletContext sc = request.getServletContext();
-	        conn = (Connection) sc.getAttribute("conn");
-	        
-	        MemberDao memberDao = new MemberDao();
-	        memberDao.setConnection(conn);
+	        MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
 	        
 	        Member member = memberDao.exist(email, password);
 	        if (member != null) {
@@ -50,11 +46,12 @@ public class LoginServlet extends HttpServlet {
 	            
 	            response.sendRedirect(URL_MEMBER_LIST);
 	        } else {           // 로그인이 실패한 경우
-	            RequestDispatcher rd = request.getRequestDispatcher(URL_LOGIN_FAIL);
-	            rd.forward(request, response);
+            	throw new ServletException("Failed in login");
 	        }
         } catch (Exception e) {
-            throw new ServletException(e);
+//          request.setAttribute("error", e);
+        	RequestDispatcher rd = request.getRequestDispatcher(URL_LOGIN_FAIL);
+        	rd.forward(request, response);
         }
 	}
 

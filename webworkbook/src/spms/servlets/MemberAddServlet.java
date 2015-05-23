@@ -1,7 +1,6 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -31,28 +30,23 @@ public class MemberAddServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        Connection conn = null;
+        int result = 0;
         
         try {
-        	int result = 0;
-            ServletContext sc = this.getServletContext();
-            conn = (Connection) sc.getAttribute("conn");
-            
             Member member = new Member()
             					.setEmail(req.getParameter("email"))
             					.setPassword(req.getParameter("password"))
             					.setName(req.getParameter("name"));
 
-            MemberDao memberDao = new MemberDao();
-            memberDao.setConnection(conn);
+            ServletContext sc = this.getServletContext();
+            MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
             
             result = memberDao.insert(member);
-            if (result == 0)
-            	throw new Exception("Insert failed!");
-            
-            // redirect
-            resp.sendRedirect("list");
-            
+            if (result == 1) {
+            	resp.sendRedirect("list");
+            } else {
+            	throw new ServletException("Failed in insert - result:" + result);
+            }
         } catch (Exception e) {
             req.setAttribute("error", e);
             RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");

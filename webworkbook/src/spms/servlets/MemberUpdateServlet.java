@@ -1,7 +1,6 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -21,24 +20,22 @@ public class MemberUpdateServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Connection conn = null;
         int memberNo = Integer.parseInt(req.getParameter("no"));
         RequestDispatcher rd = null;
         
         try {
             ServletContext sc = this.getServletContext(); 
-            conn = (Connection) sc.getAttribute("conn");
-
-            MemberDao memberDao = new MemberDao();
-            memberDao.setConnection(conn);
+            MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
             
             Member member = memberDao.selectOne(memberNo);
-            
-            req.setAttribute("member", member);
-                
-            rd = req.getRequestDispatcher("/member/MemberUpdateForm.jsp");
-            rd.forward(req, resp);
-//          throw new ServletException("Failed in update - select member no:" + no);
+            if (member != null) {
+	            req.setAttribute("member", member);
+	                
+	            rd = req.getRequestDispatcher("/member/MemberUpdateForm.jsp");
+	            rd.forward(req, resp);
+            } else {
+            	throw new ServletException("Failed in update - select member no:" + memberNo);
+            }
         } catch (Exception e) {
             req.setAttribute("error", e);
             rd = req.getRequestDispatcher("/error/Error.jsp");
@@ -51,25 +48,21 @@ public class MemberUpdateServlet extends HttpServlet {
             throws ServletException, IOException {
         
     	int result = 0;
-        Connection conn = null;
         
         try {
-            ServletContext sc = this.getServletContext();
-            conn = (Connection) sc.getAttribute("conn");
-            
             Member member = new Member()
             					.setNo(Integer.parseInt(req.getParameter("no")))
             					.setEmail(req.getParameter("email"))
             					.setName(req.getParameter("name"));
 
-            MemberDao memberDao = new MemberDao();
-            memberDao.setConnection(conn);
+            ServletContext sc = this.getServletContext();
+            MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
             
             result = memberDao.update(member);
             if (result == 1) {
             	resp.sendRedirect("list");
             } else {
-            	throw new Exception("Faile in update - update()");
+            	throw new Exception("Failed in update - update()");
             }
         } catch (Exception e) {
             req.setAttribute("error", e);

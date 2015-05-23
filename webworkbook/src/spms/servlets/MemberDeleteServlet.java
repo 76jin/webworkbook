@@ -1,8 +1,6 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -25,21 +23,17 @@ public class MemberDeleteServlet extends HttpServlet {
             throws ServletException, IOException {
     	int result = 0;
     	int no = Integer.parseInt(req.getParameter("no"));
-        Connection conn = null;
+    	
         try {
             ServletContext sc = this.getServletContext();
-            conn = (Connection) sc.getAttribute("conn");
-            
-            MemberDao memberDao = new MemberDao();
-            memberDao.setConnection(conn);
+            MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
             
             result = memberDao.delete(no);
             if (result == 1) {
             	resp.sendRedirect("list");
             } else {
-            	throw new Exception("Failed delete - delete no:" + no);
+            	throw new ServletException("Failed in update - result:" + result);
             }
-            
         } catch (Exception e) {
             req.setAttribute("error", e);
             RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");

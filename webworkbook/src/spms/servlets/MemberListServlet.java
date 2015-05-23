@@ -25,7 +25,6 @@ public class MemberListServlet extends HttpServlet {
         
         try {
             ServletContext sc = this.getServletContext();
-            
             MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
             
             req.setAttribute("members", memberDao.selectList());

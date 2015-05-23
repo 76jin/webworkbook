@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.sql.DataSource;
 
-import spms.util.DBConnectionPool;
 import spms.vo.Member;
 
 public class MemberDao {
-	DBConnectionPool dbConnectionPool;
+	DataSource ds;
 	
-	public void setDbConnectionPool(DBConnectionPool dbConnectionPool) {
-		this.dbConnectionPool = dbConnectionPool;
+	public void setDataSource(DataSource ds) {
+		this.ds = ds;
 	}
 
 	// 회원 목록
@@ -32,7 +32,7 @@ public class MemberDao {
 				+ " order by MNO asc";
 		
 		try {
-			connection = dbConnectionPool.getConnection();
+			connection = ds.getConnection();
 			stmt = connection.createStatement();
 			rs = stmt.executeQuery(query);
 			
@@ -52,7 +52,7 @@ public class MemberDao {
 		} finally {
 			try { if (rs != null) rs.close(); } catch (Exception e) {}
 			try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-			if (connection != null) dbConnectionPool.returnConnection(connection);
+			try { if (connection != null) connection.close(); } catch (Exception e) {}
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class MemberDao {
         int result = 0;
         
         try {
-        	connection = dbConnectionPool.getConnection();
+        	connection = ds.getConnection();
             pstmt = connection.prepareStatement(query);
             pstmt.setString(1, member.getEmail());
             pstmt.setString(2, member.getPassword());
@@ -78,7 +78,7 @@ public class MemberDao {
         	throw new Exception(e);
         } finally {
             try { pstmt.close(); } catch (SQLException e) {}
-            if (connection != null) dbConnectionPool.returnConnection(connection);
+			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
 	
@@ -91,7 +91,7 @@ public class MemberDao {
                 + " where MNO=" + no;
         
         try {
-        	connection = dbConnectionPool.getConnection();
+        	connection = ds.getConnection();
             stmt = connection.createStatement();
             rs = stmt.executeQuery(query);
             if (rs.next()) {
@@ -109,7 +109,7 @@ public class MemberDao {
         } finally {
             try { rs.close(); } catch (Exception e) {}
             try { stmt.close(); } catch (Exception e) {}
-            if (connection != null) dbConnectionPool.returnConnection(connection);
+			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
 	
@@ -122,7 +122,7 @@ public class MemberDao {
         int result = 0;
         
         try {
-        	connection = dbConnectionPool.getConnection();
+        	connection = ds.getConnection();
             pstmt = connection.prepareStatement(query);
             pstmt.setString(1, member.getEmail());
             pstmt.setString(2, member.getName());
@@ -134,7 +134,7 @@ public class MemberDao {
         	throw new Exception(e);
         } finally {
             try { pstmt.close(); } catch (Exception e) {}
-            if (connection != null) dbConnectionPool.returnConnection(connection);
+			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
 	
@@ -146,7 +146,7 @@ public class MemberDao {
         int result = 0;
         
         try {
-        	connection = dbConnectionPool.getConnection();
+        	connection = ds.getConnection();
             pstmt = connection.prepareStatement(query);
             pstmt.setInt(1, no);
             result = pstmt.executeUpdate();
@@ -157,7 +157,7 @@ public class MemberDao {
         	throw new Exception(e);
         } finally {
             try { pstmt.close(); } catch (Exception e) {}
-            if (connection != null) dbConnectionPool.returnConnection(connection);
+			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
 	
@@ -169,7 +169,7 @@ public class MemberDao {
 	    String query = "SELECT MNAME,EMAIL FROM MEMBERS WHERE EMAIL=? AND PWD=?";
 	    
 	    try {
-        	connection = dbConnectionPool.getConnection();
+        	connection = ds.getConnection();
 	        pstmt = connection.prepareStatement(query);
 	        pstmt.setString(1, email);
 	        pstmt.setString(2, password);
@@ -189,7 +189,7 @@ public class MemberDao {
         } finally {
             try { if (rs != null) rs.close(); } catch (Exception e) {}
             try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
-            if (connection != null) dbConnectionPool.returnConnection(connection);
+			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
 	

@@ -47,7 +47,6 @@ public class MemberAddServlet extends HttpServlet {
             memberDao.setConnection(conn);
             
             result = memberDao.insert(member);
-            System.out.println("result:" + result);
             if (result == 0)
             	throw new Exception("Insert failed!");
             

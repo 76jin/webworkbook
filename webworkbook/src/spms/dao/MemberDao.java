@@ -8,8 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import spms.vo.Member;
 
@@ -79,8 +78,54 @@ public class MemberDao {
 	// 회원 삭제
 	
 	// 회원 상세 정보 조회
+	public Member selectOne(int no) throws Exception {
+        Statement stmt = null;
+        ResultSet rs = null;
+        String query = "select MNO,EMAIL,MNAME,CRE_DATE from MEMBERS"
+                + " where MNO=" + no;
+        
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                Member member = new Member()
+                                    .setNo(no)
+                                    .setEmail(rs.getString("EMAIL"))
+                                    .setName(rs.getString("MNAME"))
+                                    .setCreatedDate(rs.getDate("CRE_DATE"));
+                return member;
+            } else {
+                throw new ServletException("Failed in update - select member no:" + no);
+            }
+        } catch (Exception e) {
+        	throw new Exception(e);
+        } finally {
+            try { rs.close(); } catch (Exception e) {}
+            try { stmt.close(); } catch (Exception e) {}
+        }
+	}
 	
 	// 회원 정보 변경
+	public int update(Member member) throws Exception {
+		int result = 0;
+        PreparedStatement pstmt = null;
+        String query = "UPDATE MEMBERS SET"
+                + " EMAIL=?, MNAME=?, MOD_DATE=now() WHERE MNO=?";
+        
+        try {
+            pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, member.getEmail());
+            pstmt.setString(2, member.getName());
+            pstmt.setInt(3, member.getNo());
+            result = pstmt.executeUpdate();
+            
+            return result;
+        } catch (Exception e) {
+        	throw new Exception(e);
+        } finally {
+            try { pstmt.close(); } catch (Exception e) {}
+        }
+	}
 	
 	// 있으면 Member 객체 리턴, 없으면 null 리턴
 	

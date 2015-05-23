@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spms.dao.MemberDao;
 import spms.vo.Member;
 
 @SuppressWarnings("serial")
@@ -24,72 +25,59 @@ public class MemberUpdateServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
         int memberNo = Integer.parseInt(req.getParameter("no"));
-        String query = "select MNO,EMAIL,MNAME,CRE_DATE from MEMBERS"
-                + " where MNO=" + memberNo;
         RequestDispatcher rd = null;
         
         try {
             ServletContext sc = this.getServletContext(); 
             conn = (Connection) sc.getAttribute("conn");
+
+            MemberDao memberDao = new MemberDao();
+            memberDao.setConnection(conn);
             
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(query);
-            if (rs.next()) {
-                Member member = new Member()
-                                    .setNo(memberNo)
-                                    .setEmail(rs.getString("EMAIL"))
-                                    .setName(rs.getString("MNAME"))
-                                    .setCreatedDate(rs.getDate("CRE_DATE"));
-                req.setAttribute("member", member);
+            Member member = memberDao.selectOne(memberNo);
+            
+            req.setAttribute("member", member);
                 
-                rd = req.getRequestDispatcher("/member/MemberUpdateForm.jsp");
-                rd.forward(req, resp);
-            } else {
-                throw new ServletException();
-            }
+            rd = req.getRequestDispatcher("/member/MemberUpdateForm.jsp");
+            rd.forward(req, resp);
+//          throw new ServletException("Failed in update - select member no:" + no);
         } catch (Exception e) {
             req.setAttribute("error", e);
             rd = req.getRequestDispatcher("/error/Error.jsp");
             rd.forward(req, resp);
-        } finally {
-            try { rs.close(); } catch (Exception e) {}
-            try { stmt.close(); } catch (Exception e) {}
-//          try { conn.close(); } catch (Exception e) {}
         }
     }
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-//      CharacterEncodingFilter 에서 처리
-//      req.setCharacterEncoding("UTF-8");
         
+    	int result = 0;
         Connection conn = null;
-        PreparedStatement pstmt = null;
-        String query = "UPDATE MEMBERS SET"
-                + " EMAIL=?, MNAME=?, MOD_DATE=now() WHERE MNO=?";
         
         try {
             ServletContext sc = this.getServletContext();
             conn = (Connection) sc.getAttribute("conn");
             
-            pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, req.getParameter("email"));
-            pstmt.setString(2, req.getParameter("name"));
-            pstmt.setInt(3, Integer.parseInt(req.getParameter("no")));
-            pstmt.executeUpdate();
+            Member member = new Member()
+            					.setNo(Integer.parseInt(req.getParameter("no")))
+            					.setEmail(req.getParameter("email"))
+            					.setName(req.getParameter("name"));
+
+            MemberDao memberDao = new MemberDao();
+            memberDao.setConnection(conn);
             
-            resp.sendRedirect("list");
+            result = memberDao.update(member);
+            if (result == 1) {
+            	resp.sendRedirect("list");
+            } else {
+            	throw new Exception("Faile in update - update()");
+            }
         } catch (Exception e) {
             req.setAttribute("error", e);
             RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");
             rd.forward(req, resp);
-        } finally {
-            try { pstmt.close(); } catch (Exception e) {}
-//          try { conn.close(); } catch (Exception e) {}
         }
     }
 }

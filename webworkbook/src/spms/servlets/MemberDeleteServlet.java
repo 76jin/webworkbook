@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spms.dao.MemberDao;
+
 @SuppressWarnings("serial")
 @WebServlet("/member/delete")
 public class MemberDeleteServlet extends HttpServlet {
@@ -21,28 +23,27 @@ public class MemberDeleteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+    	int result = 0;
+    	int no = Integer.parseInt(req.getParameter("no"));
         Connection conn = null;
-        PreparedStatement pstmt = null;
-        String query = "DELETE FROM MEMBERS WHERE MNO=?";
-        int result = 0;
         try {
             ServletContext sc = this.getServletContext();
             conn = (Connection) sc.getAttribute("conn");
             
-            pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, Integer.parseInt(req.getParameter("no")));
-            result = pstmt.executeUpdate();
-//          logger.info("[delete] no:" + result);   // 0: delete fail.
+            MemberDao memberDao = new MemberDao();
+            memberDao.setConnection(conn);
             
-            resp.sendRedirect("list");
+            result = memberDao.delete(no);
+            if (result == 1) {
+            	resp.sendRedirect("list");
+            } else {
+            	throw new Exception("Failed delete - delete no:" + no);
+            }
             
         } catch (Exception e) {
             req.setAttribute("error", e);
             RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");
             rd.forward(req, resp);
-        } finally {
-            try { pstmt.close(); } catch (Exception e) {}
-//          try { conn.close(); } catch (Exception e) {}
         }
     }
     

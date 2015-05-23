@@ -2,8 +2,6 @@ package spms.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -12,6 +10,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import spms.dao.MemberDao;
+import spms.vo.Member;
 
 @WebServlet("/member/add")
 public class MemberAddServlet extends HttpServlet {
@@ -30,23 +31,25 @@ public class MemberAddServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // CharacterEncodingFilter 에서 처리
-//      req.setCharacterEncoding("UTF-8");  // POST 요청시 한글 깨침 처리.
-        
         Connection conn = null;
-        PreparedStatement pstmt = null;
-        String query = "insert into MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
-                + " values(?,?,?,now(),now())";
         
         try {
+        	int result = 0;
             ServletContext sc = this.getServletContext();
             conn = (Connection) sc.getAttribute("conn");
             
-            pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, req.getParameter("email"));
-            pstmt.setString(2, req.getParameter("password"));
-            pstmt.setString(3, req.getParameter("name"));
-            pstmt.executeUpdate();
+            Member member = new Member()
+            					.setEmail(req.getParameter("email"))
+            					.setPassword(req.getParameter("password"))
+            					.setName(req.getParameter("name"));
+
+            MemberDao memberDao = new MemberDao();
+            memberDao.setConnection(conn);
+            
+            result = memberDao.insert(member);
+            System.out.println("result:" + result);
+            if (result == 0)
+            	throw new Exception("Insert failed!");
             
             // redirect
             resp.sendRedirect("list");
@@ -55,9 +58,6 @@ public class MemberAddServlet extends HttpServlet {
             req.setAttribute("error", e);
             RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");
             rd.forward(req, resp);
-        } finally {
-            try { pstmt.close(); } catch (SQLException e) {}
-//          try { conn.close(); } catch (SQLException e) {}
         }
     }
 }

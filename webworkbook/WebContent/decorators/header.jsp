@@ -1,11 +1,7 @@
 <%@page import="spms.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
-<jsp:useBean id="member"
-        scope="session"
-        class="spms.vo.Member"
-        type="spms.vo.Member" />
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     
 <!--head start-->
 <div style="background-color:#00008b;color:#ffffff;height:20px;padding:5px;">
@@ -14,23 +10,21 @@
 	</a>
 <span style="float: right;">
 
-<%
-if (member != null && member.getEmail() != null) {
-%>
-<%=member.getEmail() %>
-<a style="color:white;"
-    href="<%=request.getContextPath()%>/auth/logout">로그아웃</a>
+<c:choose>
+ <c:when test="${not empty sessionScope.member && not empty sessionScope.member.email}">
+ 	${member.email}
+	<a style="color:white;"
+	    href="<%=request.getContextPath()%>/auth/logout.do">로그아웃</a>
+ </c:when>
+ <c:otherwise>
+	<a style="color:white;"
+	    href="<%=request.getContextPath()%>/auth/login.do">로그인</a>
+	<a style="color:red;"
+	    href="<%=request.getContextPath()%>/auth/join.do">회원가입</a>
+ </c:otherwise>
+</c:choose>
 
-<%
-} else {
-%>
-<a style="color:white;"
-    href="<%=request.getContextPath()%>/auth/login">로그인</a>
-<a style="color:white;"
-    href="<%=request.getContextPath()%>/auth/join">회원가입</a>
-<%
-}
-%>
+
 </span>
 
 </div>

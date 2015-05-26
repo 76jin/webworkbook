@@ -2,7 +2,6 @@ package spms.servlets;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,22 +21,19 @@ public class MemberDeleteServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
     	int result = 0;
-    	int no = Integer.parseInt(req.getParameter("no"));
     	
         try {
             ServletContext sc = this.getServletContext();
             MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
             
-            result = memberDao.delete(no);
-            if (result == 1) {
-            	resp.sendRedirect("list");
-            } else {
-            	throw new ServletException("Failed in update - result:" + result);
+            result = memberDao.delete(Integer.parseInt(req.getParameter("no")));
+            if (result != 1) {
+            	throw new ServletException("Failed in delete - result:" + result);
             }
+            
+            req.setAttribute("viewUrl", "redirect:list.do");
         } catch (Exception e) {
-            req.setAttribute("error", e);
-            RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");
-            rd.forward(req, resp);
+        	throw new ServletException(e);
         }
     }
     

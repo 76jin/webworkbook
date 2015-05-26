@@ -2,7 +2,6 @@ package spms.servlets;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,15 +22,11 @@ public class LoginServlet extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    RequestDispatcher rd = request.getRequestDispatcher("/auth/LoginForm.jsp");
-	    rd.forward(request, response);
+	    request.setAttribute("viewUrl", "/auth/LoginForm.jsp");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-	    final String URL_MEMBER_LIST = "../member/list";
-	    final String URL_LOGIN_FAIL = "/auth/LoginFail.jsp";
-	    
 	    String email = request.getParameter("email");
 	    String password = request.getParameter("password");
 	    
@@ -44,14 +39,13 @@ public class LoginServlet extends HttpServlet {
 	            HttpSession session = request.getSession();
 	            session.setAttribute("member", member);
 	            
-	            response.sendRedirect(URL_MEMBER_LIST);
+	            request.setAttribute("viewUrl", 
+	            		"redirect:" + request.getContextPath() + "/member/list.do");
 	        } else {           // 로그인이 실패한 경우
-            	throw new ServletException("Failed in login");
+	        	request.setAttribute("viewUrl", "/auth/LoginFail.jsp");
 	        }
         } catch (Exception e) {
-//          request.setAttribute("error", e);
-        	RequestDispatcher rd = request.getRequestDispatcher(URL_LOGIN_FAIL);
-        	rd.forward(request, response);
+        	throw new ServletException(e);
         }
 	}
 

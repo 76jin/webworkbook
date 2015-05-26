@@ -2,7 +2,6 @@ package spms.servlets;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 
+// 프론트 컨트롤러 적용
 @WebServlet("/member/add")
 public class MemberAddServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -20,10 +20,8 @@ public class MemberAddServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        resp.setContentType("text/html; charset=UTF-8");
-        
-        RequestDispatcher rd = req.getRequestDispatcher("/member/MemberAdd.jsp");
-        rd.forward(req, resp);
+    	
+    	req.setAttribute("viewUrl", "/member/MemberForm.jsp");
     }
     
     @Override
@@ -33,24 +31,19 @@ public class MemberAddServlet extends HttpServlet {
         int result = 0;
         
         try {
-            Member member = new Member()
-            					.setEmail(req.getParameter("email"))
-            					.setPassword(req.getParameter("password"))
-            					.setName(req.getParameter("name"));
-
-            ServletContext sc = this.getServletContext();
+        	ServletContext sc = this.getServletContext();
+            Member member = (Member) req.getAttribute("member");
             MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
             
             result = memberDao.insert(member);
-            if (result == 1) {
-            	resp.sendRedirect("list");
-            } else {
-            	throw new ServletException("Failed in insert - result:" + result);
+            if (result != 1) {
+            	throw new ServletException("Failed in insert, result:" + result);
             }
+            
+            req.setAttribute("viewUrl", "redirect:list.do");
+            
         } catch (Exception e) {
-            req.setAttribute("error", e);
-            RequestDispatcher rd = req.getRequestDispatcher("/error/Error.jsp");
-            rd.forward(req, resp);
+        	throw new ServletException(e);
         }
     }
 }

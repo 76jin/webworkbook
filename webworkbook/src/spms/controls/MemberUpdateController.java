@@ -6,11 +6,16 @@ import spms.dao.MemberDao;
 import spms.vo.Member;
 
 public class MemberUpdateController implements Controller {
+	MemberDao memberDao;
+	
+	public MemberUpdateController setMemberDao(MemberDao memberDao) {
+		this.memberDao = memberDao;
+		return this;
+	}
 
 	@Override
 	public String execute(Map<String, Object> model) throws Exception {
 		
-		MemberDao memberDao = (MemberDao) model.get("memberDao");
 		if (model.get("member") == null) {				// 회원 상세 정보 요청이 들어온 경우 
 			Integer no = (Integer) model.get("no");
 			Member member = memberDao.selectOne(no);

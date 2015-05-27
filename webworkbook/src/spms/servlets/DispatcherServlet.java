@@ -12,12 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import spms.controls.Controller;
-import spms.controls.LogOutController;
-import spms.controls.LoginController;
-import spms.controls.MemberAddController;
-import spms.controls.MemberDeleteController;
-import spms.controls.MemberListController;
-import spms.controls.MemberUpdateController;
 import spms.vo.Member;
 
 @WebServlet("*.do")
@@ -36,17 +30,15 @@ public class DispatcherServlet extends HttpServlet {
 			
 			// 페이지 컨트롤러에게 전달할 Map 객체를 준비한다. 
 			HashMap<String, Object> model = new HashMap<String, Object>();
-			model.put("memberDao", sc.getAttribute("memberDao"));
 			model.put("session", request.getSession());
+			model.put("contextPath", request.getContextPath());
 			
-			Controller pageController = null;
+			Controller pageController = (Controller) sc.getAttribute(servletPath);
 			
 			switch (servletPath) {
 			case "/member/list.do":
-				pageController = new MemberListController();
 				break;
 			case "/member/add.do":
-				pageController = new MemberAddController();
 				if (request.getParameter("email") != null) {
 					model.put("member", new Member()
 					.setEmail(request.getParameter("email"))
@@ -55,7 +47,6 @@ public class DispatcherServlet extends HttpServlet {
 				}
 				break;
 			case "/member/update.do":
-				pageController = new MemberUpdateController();
 				if (request.getParameter("email") == null) {	// 회원 정보 상세 조회 경우
 					model.put("no", new Integer(request.getParameter("no")));
 				} else {										// 회원 정보 변경 요청인 경우
@@ -66,15 +57,9 @@ public class DispatcherServlet extends HttpServlet {
 				}
 				break;
 			case "/member/delete.do":
-				pageController = new MemberDeleteController();
-				if (request.getParameter("no") != null) {
-					model.put("no", new Integer(request.getParameter("no")));
-				}
+				model.put("no", new Integer(request.getParameter("no")));
 				break;
 			case "/auth/login.do":
-				pageController = new LoginController();
-				model.put("contextPath", request.getContextPath());
-				
 				if (request.getParameter("email") != null) {
 					model.put("loginInfo", new Member()
 							.setEmail(request.getParameter("email"))
@@ -82,8 +67,6 @@ public class DispatcherServlet extends HttpServlet {
 				}
 				break;
 			case "/auth/logout.do":
-				pageController = new LogOutController();
-				model.put("contextPath", request.getContextPath());
 				break;
 			}
 			

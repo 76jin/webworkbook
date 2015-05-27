@@ -11,8 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spms.bind.DataBinding;
+import spms.bind.ServletRequestDataBinder;
 import spms.controls.Controller;
-import spms.vo.Member;
 
 @WebServlet("*.do")
 public class DispatcherServlet extends HttpServlet {
@@ -35,39 +36,8 @@ public class DispatcherServlet extends HttpServlet {
 			
 			Controller pageController = (Controller) sc.getAttribute(servletPath);
 			
-			switch (servletPath) {
-			case "/member/list.do":
-				break;
-			case "/member/add.do":
-				if (request.getParameter("email") != null) {
-					model.put("member", new Member()
-					.setEmail(request.getParameter("email"))
-					.setPassword(request.getParameter("password"))
-					.setName(request.getParameter("name")));
-				}
-				break;
-			case "/member/update.do":
-				if (request.getParameter("email") == null) {	// 회원 정보 상세 조회 경우
-					model.put("no", new Integer(request.getParameter("no")));
-				} else {										// 회원 정보 변경 요청인 경우
-					model.put("member", new Member()
-					.setNo(Integer.parseInt(request.getParameter("no")))
-					.setEmail(request.getParameter("email"))
-					.setName(request.getParameter("name")));
-				}
-				break;
-			case "/member/delete.do":
-				model.put("no", new Integer(request.getParameter("no")));
-				break;
-			case "/auth/login.do":
-				if (request.getParameter("email") != null) {
-					model.put("loginInfo", new Member()
-							.setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password")));
-				}
-				break;
-			case "/auth/logout.do":
-				break;
+			if (pageController instanceof DataBinding) {
+				prepareRequestData(request, model, (DataBinding) pageController);
 			}
 			
 			// send to PageController
@@ -90,6 +60,24 @@ public class DispatcherServlet extends HttpServlet {
 			request.setAttribute("error", e);
 			RequestDispatcher rd = request.getRequestDispatcher("/error/Error.jsp");
 			rd.forward(request, response);
+		}
+	}
+
+	private void prepareRequestData(HttpServletRequest request,
+			HashMap<String, Object> model, DataBinding dataBinding)
+			throws Exception {
+		
+		Object[] dataBinders = dataBinding.getDataBinders();
+		String dataName = null;
+		Class<?> dataType = null;
+		Object dataObj = null;
+		
+		for (int i = 0; i < dataBinders.length; i+=2) {
+			dataName = (String) dataBinders[i];
+			dataType = (Class<?>) dataBinders[i + 1];
+			dataObj = ServletRequestDataBinder.bind(request, dataType, dataName);
+			model.put(dataName, dataObj);
+			
 		}
 	}
 	

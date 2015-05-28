@@ -8,10 +8,10 @@ import spms.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 
-public class LoginController implements Controller, DataBinding {
+public class LogInController implements Controller, DataBinding {
 	MemberDao memberDao;
 	
-	public LoginController setMemberDao(MemberDao memberDao) {
+	public LogInController setMemberDao(MemberDao memberDao) {
 		this.memberDao = memberDao;
 		return this;
 	}

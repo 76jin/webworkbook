@@ -12,11 +12,15 @@
 
 <c:choose>
  <c:when test="${not empty sessionScope.member && not empty sessionScope.member.email}">
+ 	<a style="color:white;"
+ 		href="<%=request.getContextPath()%>/project/list.do">프로젝트</a>
  	${member.email}
 	<a style="color:white;"
 	    href="<%=request.getContextPath()%>/auth/logout.do">로그아웃</a>
  </c:when>
  <c:otherwise>
+  	<a style="color:white;"
+ 		href="<%=request.getContextPath()%>/project/list.do">프로젝트</a>
 	<a style="color:white;"
 	    href="<%=request.getContextPath()%>/auth/login.do">로그인</a>
 	<a style="color:red;"

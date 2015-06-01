@@ -1,6 +1,8 @@
 package spms.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -52,6 +54,37 @@ public class MySqlProjectDao implements ProjectDao {
 		} finally {
 			try { if (rs != null) rs.close(); } catch (Exception e) {}
 			try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+			try { if (connection != null) connection.close(); } catch (Exception e) {}
+		}
+	}
+
+	@Override
+	public int insert(Project project) throws Exception {
+		Connection connection = null;
+		PreparedStatement pstmt = null;
+		
+		String query = 
+				"INSERT INTO PROJECTS" +
+				" (PNAME,CONTENT,STA_DATE,END_DATE,CRE_DATE,TAGS)" + 
+				" VALUES" +
+				" (?, ?, ?, ?, now(), ?)";
+		int result = 0;
+		try {
+			connection = ds.getConnection();
+			pstmt = connection.prepareStatement(query);
+			pstmt.setString(1, project.getTitle());
+			pstmt.setString(2, project.getContent());
+			pstmt.setDate(3, (Date) project.getStartDate());
+			pstmt.setDate(4, (Date) project.getEndDate());
+			pstmt.setString(5, project.getTags());
+			
+			result = pstmt.executeUpdate();
+			System.out.println("result: " + result);
+			return result;
+		} catch (Exception e) {
+			throw new Exception(e);
+		} finally {
+			try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
 			try { if (connection != null) connection.close(); } catch (Exception e) {}
 		}
 	}

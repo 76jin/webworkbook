@@ -79,7 +79,7 @@ public class MySqlMemberDao implements MemberDao {
         } catch (Exception e) {
         	throw new Exception(e);
         } finally {
-            try { pstmt.close(); } catch (SQLException e) {}
+            try { if (pstmt != null) pstmt.close(); } catch (SQLException e) {}
 			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
@@ -109,8 +109,8 @@ public class MySqlMemberDao implements MemberDao {
         } catch (Exception e) {
         	throw new Exception(e);
         } finally {
-            try { rs.close(); } catch (Exception e) {}
-            try { stmt.close(); } catch (Exception e) {}
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
 			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
@@ -135,7 +135,7 @@ public class MySqlMemberDao implements MemberDao {
         } catch (Exception e) {
         	throw new Exception(e);
         } finally {
-            try { pstmt.close(); } catch (Exception e) {}
+            try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
 			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}
@@ -158,7 +158,7 @@ public class MySqlMemberDao implements MemberDao {
         } catch (Exception e) {
         	throw new Exception(e);
         } finally {
-            try { pstmt.close(); } catch (Exception e) {}
+            try { if (pstmt != null) pstmt.close(); } catch (Exception e) {}
 			try { if (connection != null) connection.close(); } catch (Exception e) {}
         }
 	}

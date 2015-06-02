@@ -60,6 +60,8 @@ label {
 		 </li>
 	</ul>
 		<input type="submit" value="추가">
+		<input type="button" value="삭제"
+				onclick='location.href="delete.do?no=${project.no}"'>
 		<input type="reset" value="취소" onclick='location.href="list.do"'><br>
 	</form>
 	

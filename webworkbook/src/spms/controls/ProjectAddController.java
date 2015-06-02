@@ -31,7 +31,6 @@ public class ProjectAddController implements Controller, DataBinding {
 			return "/project/ProjectForm.jsp";
 		} else {								// 프로젝트 등록 요청 시,
 			result = projectDao.insert(project);
-			System.out.println("result: " + result);
 			return "redirect:list.do";
 		}
 	}

@@ -13,6 +13,26 @@ public class Project {
 	protected Date		createdDate;	// 생성일
 	protected String	tags;		// 태그들
 	
+	public Project() {
+	}
+	
+	public Project(int no, String title, String content, Date startDate,
+			Date endDate, int state, String tags) {
+		this(no, title, content, startDate, endDate, state, null, tags);
+	}
+	
+	public Project(int no, String title, String content, Date startDate,
+			Date endDate, int state, Date createdDate, String tags) {
+		this.no = no;
+		this.title = title;
+		this.content = content;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.state = state;
+		this.createdDate = createdDate;
+		this.tags = tags;
+	}
+	
 	public int getNo() {
 		return no;
 	}

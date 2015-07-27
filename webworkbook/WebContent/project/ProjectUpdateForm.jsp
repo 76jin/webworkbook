@@ -59,7 +59,7 @@ label {
 				value="${project.tags}" placeholder="예)태그1 태그2 태그3">
 		 </li>
 	</ul>
-		<input type="submit" value="추가">
+		<input type="submit" value="저장">
 		<input type="button" value="삭제"
 				onclick='location.href="delete.do?no=${project.no}"'>
 		<input type="reset" value="취소" onclick='location.href="list.do"'><br>

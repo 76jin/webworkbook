@@ -16,11 +16,71 @@
 	
 	<table border="1">
 		<tr>
-			<th>번호</th>
-			<th>제목</th>
-			<th>시작일</th>
-			<th>종료일</th>
-			<th>상태</th>
+			<th>
+				<c:choose>
+					<c:when test="${order == 'PNO_ASC'}">
+						<a href="list.do?order=PNO_DESC">번호△ </a>
+					</c:when>
+					<c:when test="${order == 'PNO_DESC'}">
+						<a href="list.do?order=PNO_ASC">번호▽</a>
+					</c:when>
+					<c:otherwise>
+						<a href="list.do?order=PNO_ASC">번호</a>
+					</c:otherwise>
+				</c:choose>
+			</th>
+			<th>
+				<c:choose>
+					<c:when test="${order == 'TITLE_ASC'}">
+						<a href="list.do?order=TITLE_DESC">제목△ </a>
+					</c:when>
+					<c:when test="${order == 'TITLE_DESC'}">
+						<a href="list.do?order=TITLE_ASC">제목▽</a>
+					</c:when>
+					<c:otherwise>
+						<a href="list.do?order=TITLE_ASC">제목</a>
+					</c:otherwise>
+				</c:choose>
+			</th>
+			<th>
+				<c:choose>
+					<c:when test="${order == 'STARTDATE_ASC'}">
+						<a href="list.do?order=STARTDATE_DESC">시작일△ </a>
+					</c:when>
+					<c:when test="${order == 'STARTDATE_DESC'}">
+						<a href="list.do?order=STARTDATE_ASC">시작일▽</a>
+					</c:when>
+					<c:otherwise>
+						<a href="list.do?order=STARTDATE_ASC">시작일</a>
+					</c:otherwise>
+				</c:choose>
+			</th>
+			<th>
+				<c:choose>
+					<c:when test="${order == 'ENDDATE_ASC'}">
+						<a href="list.do?order=ENDDATE_DESC">종료일△ </a>
+					</c:when>
+					<c:when test="${order == 'ENDDATE_DESC'}">
+						<a href="list.do?order=ENDDATE_ASC">종료일▽</a>
+					</c:when>
+					<c:otherwise>
+						<a href="list.do?order=ENDDATE_ASC">종료일</a>
+					</c:otherwise>
+				</c:choose>
+			</th>
+			<th>
+				<c:choose>
+					<c:when test="${order == 'STATE_ASC'}">
+						<a href="list.do?order=STATE_DESC">상태△ </a>
+					</c:when>
+					<c:when test="${order == 'STATE_DESC'}">
+						<a href="list.do?order=STATE_ASC">상태▽</a>
+					</c:when>
+					<c:otherwise>
+						<a href="list.do?order=STATE_ASC">상태</a>
+					</c:otherwise>
+				</c:choose>
+			</th>
 			<th></th>
 		</tr>
 

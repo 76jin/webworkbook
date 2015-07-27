@@ -5,6 +5,10 @@
 <configuration>
 	<properties resource="spms/dao/db.properties" />
 	
+	<settings>
+		<setting name="logImpl" value="LOG4J"/>
+	</settings>
+	
 	<typeAliases>
 		<typeAlias type="spms.vo.Project" alias="project" />
 		<typeAlias type="spms.vo.Member" alias="member"/>
@@ -24,6 +28,7 @@
 	
 	<mappers>
 		<mapper resource="spms/dao/MySqlProjectDao.xml"/>
+		<mapper resource="spms/dao/MySqlMemberDao.xml"/>
 	</mappers>
 
 </configuration>

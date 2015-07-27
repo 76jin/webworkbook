@@ -1,5 +1,6 @@
 package spms.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -17,11 +18,11 @@ public class MySqlMemberDao implements MemberDao {
 	}
 	
 	// 회원 목록
-	public List<Member> selectList() throws Exception {
+	public List<Member> selectList(HashMap<String, Object> paramMap) throws Exception {
 		SqlSession sqlSession = null;
 		try {
 			sqlSession = sqlSessionFactory.openSession();
-			return sqlSession.selectList("spms.dao.MemberDao.selectMemberList");
+			return sqlSession.selectList("spms.dao.MemberDao.selectMemberList", paramMap);
 		} finally {
 			sqlSession.close();
 		}
@@ -53,13 +54,28 @@ public class MySqlMemberDao implements MemberDao {
 	
 	// 회원 정보 변경
 	public int update(Member member) throws Exception {
-		SqlSession sqlSession = null;
+		SqlSession sqlSession = sqlSessionFactory.openSession();
         
         try {
-        	sqlSession = sqlSessionFactory.openSession();
-            int result = sqlSession.update("spms.dao.MemberDao.update", member);
-            sqlSession.commit();
-            return result;
+        	Member original = sqlSession.selectOne("spms.dao.MemberDao.selectMember", member.getNo());
+        	
+        	HashMap<String, Object> paramMap = new HashMap<String, Object>();
+        	if (!member.getEmail().equals(original.getEmail())) {
+        		paramMap.put("email", member.getEmail());
+        	}
+        	if  (!member.getName().equals(original.getName())) {
+        		paramMap.put("name", member.getName());
+        	}
+        	
+        	if (paramMap.size() > 0) {
+        		paramMap.put("no", member.getNo());
+        		int count = sqlSession.update("spms.dao.MemberDao.update", paramMap);
+        		sqlSession.commit();
+        		return count;
+        	} else {
+        		return 0;
+        	}
+        	
         } finally {
         	sqlSession.close();
         }

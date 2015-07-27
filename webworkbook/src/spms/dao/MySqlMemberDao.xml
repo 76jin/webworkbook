@@ -29,4 +29,17 @@
 		values(#{email},#{password},#{name},now(),now())
 	</insert>
 	
+	<update id="update" parameterType="member">
+		UPDATE MEMBERS SET
+		EMAIL=#{email}, MNAME=#{name}, MOD_DATE=now() WHERE MNO=#{no}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM MEMBERS WHERE MNO=#{value}
+	</delete>
+	
+	<select id="exist" parameterType="member" resultMap="member">
+		SELECT MNAME,EMAIL FROM MEMBERS WHERE EMAIL=#{email} AND PWD=#{password}
+	</select>
+	
 </mapper>
